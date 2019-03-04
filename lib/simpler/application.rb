@@ -29,6 +29,9 @@ module Simpler
 
     def call(env, logger)
       route = @router.route_for(env)
+      binding.pry
+      env['simpler.route_params'] = route.parse_params(env['PATH_INFO'])
+
       controller = route.controller.new(env)
       action = route.action
 

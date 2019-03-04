@@ -10,8 +10,3 @@ class AppLogger
     @app.call(env, @logger)
   end
 end
-
-# Request: GET /tests?category=Backend
-# Handler: TestsController#index
-# Parameters: {'category' => 'Backend'}
-# Response: 200 OK [text/html] tests/index.html.erb
