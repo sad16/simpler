@@ -11,14 +11,17 @@ module Simpler
       @response = Rack::Response.new
     end
 
-    def make_response(action)
+    def make_response(action, logger)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
+
+      request_log(logger)
 
       set_default_headers
       send(action)
       write_response
 
+      response_log(logger)
       @response.finish
     end
 
@@ -48,6 +51,17 @@ module Simpler
 
     def render(template)
       @request.env['simpler.template'] = template
+    end
+
+    def request_log(logger)
+      logger.info("Request: #{@request.request_method} #{@request.fullpath}")
+      logger.info("Handler: #{self.class.name}##{@request.env['simpler.action']}")
+      logger.info("Parameters: #{@request.params}")
+    end
+
+    def response_log(logger)
+      status = @response.status
+      logger.info("Response: #{status} #{Rack::Utils::HTTP_STATUS_CODES[status]} [#{@response['Content-Type']}] #{@request.env['simpler.template_path']}")
     end
 
   end

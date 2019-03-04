@@ -1,6 +1,7 @@
 require 'yaml'
 require 'singleton'
 require 'sequel'
+require 'pry'
 require_relative 'router'
 require_relative 'controller'
 
@@ -26,12 +27,12 @@ module Simpler
       @router.instance_eval(&block)
     end
 
-    def call(env)
+    def call(env, logger)
       route = @router.route_for(env)
       controller = route.controller.new(env)
       action = route.action
 
-      make_response(controller, action)
+      make_response(controller, action, logger)
     end
 
     private
@@ -50,8 +51,8 @@ module Simpler
       @db = Sequel.connect(database_config)
     end
 
-    def make_response(controller, action)
-      controller.make_response(action)
+    def make_response(controller, action, logger)
+      controller.make_response(action, logger)
     end
 
   end
