@@ -19,7 +19,7 @@ class AppLogger
     @logger.info("Request: #{env['REQUEST_METHOD']} #{env['REQUEST_URI']}")
     if env['simpler.controller']
       @logger.info("Handler: #{env['simpler.controller'].name.capitalize}Controller##{env['simpler.action']}")
-      @logger.info("Parameters: #{env['simpler.controller'].send(:params)}")
+      @logger.info("Parameters: #{env['simpler.controller'].params}")
     end
   end
 

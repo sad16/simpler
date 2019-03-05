@@ -10,7 +10,7 @@ module Simpler
     end
 
     def render(binding)
-      return plain if plain
+      return format_render if template.is_a?(Hash)
 
       template = File.read(template_path)
 
@@ -18,6 +18,15 @@ module Simpler
     end
 
     private
+
+    def format_render
+      case template.keys.first
+      when :plain
+        template[:plain]
+      else
+        raise 'Error render format'
+      end
+    end
 
     def controller
       @env['simpler.controller']
@@ -29,10 +38,6 @@ module Simpler
 
     def template
       @env['simpler.template']
-    end
-
-    def plain
-      @env['simpler.plain']
     end
 
     def template_path
