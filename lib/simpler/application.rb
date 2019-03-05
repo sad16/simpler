@@ -27,11 +27,12 @@ module Simpler
       @router.instance_eval(&block)
     end
 
-    def call(env, logger)
+    def call(env)
       route = @router.route_for(env)
 
-      env['simpler.route_params'] = route.parse_params(env['PATH_INFO']
       if route
+        env['simpler.route_params'] = route.parse_params(env['PATH_INFO'])
+
         controller = route.controller.new(env)
         action = route.action
 
@@ -57,8 +58,8 @@ module Simpler
       @db = Sequel.connect(database_config)
     end
 
-    def make_response(controller, action, logger)
-      controller.make_response(action, logger)
+    def make_response(controller, action)
+      controller.make_response(action)
     end
 
     def not_found_response

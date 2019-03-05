@@ -10,6 +10,8 @@ module Simpler
     end
 
     def render(binding)
+      return plain if plain
+
       template = File.read(template_path)
 
       ERB.new(template).result(binding)
@@ -27,6 +29,10 @@ module Simpler
 
     def template
       @env['simpler.template']
+    end
+
+    def plain
+      @env['simpler.plain']
     end
 
     def template_path
