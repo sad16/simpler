@@ -33,9 +33,14 @@ module Simpler
     end
 
     def write_response
-      body = render_body
-
+      plain = @request.env['simpler.plain']
+      body = plain ? plain : render_body
       @response.write(body)
+
+      status = @request.env['simpler.status']
+      @response.status = status if status
+
+      headers.each { |name, value| @response.set_header(name, value) }
     end
 
     def render_body
@@ -46,8 +51,17 @@ module Simpler
       @request.params
     end
 
-    def render(template)
-      @request.env['simpler.template'] = template
+    def render(template = nil, plain: nil)
+      @request.env['simpler.template'] = template and return if template
+      @request.env['simpler.plain'] = plain if plain
+    end
+
+    def status(code)
+      @request.env['simpler.status'] = code
+    end
+
+    def headers
+      @request.env['simpler.headers'] ||= {}
     end
 
   end
