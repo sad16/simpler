@@ -9,7 +9,6 @@ module Simpler
       @name = extract_name
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
-      merge_params
     end
 
     def make_response(action)
@@ -24,17 +23,13 @@ module Simpler
     end
 
     def params
-      @request.env['simpler.all_params']
+      @params ||= @request.params.merge(@request.env['simpler.route_params'])
     end
 
     private
 
     def extract_name
       self.class.name.match('(?<name>.+)Controller')[:name].downcase
-    end
-
-    def merge_params
-      @request.env['simpler.all_params'] = @request.params.merge(@request.env['simpler.route_params'])
     end
 
     def set_default_headers
