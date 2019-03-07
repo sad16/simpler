@@ -1,6 +1,7 @@
 require 'yaml'
 require 'singleton'
 require 'sequel'
+require 'pry'
 require_relative 'router'
 require_relative 'controller'
 
@@ -28,6 +29,11 @@ module Simpler
 
     def call(env)
       route = @router.route_for(env)
+
+      return not_found_response if route.nil?
+
+      env['simpler.route_params'] = route.parse_params(env['PATH_INFO'])
+
       controller = route.controller.new(env)
       action = route.action
 
@@ -52,6 +58,10 @@ module Simpler
 
     def make_response(controller, action)
       controller.make_response(action)
+    end
+
+    def not_found_response
+      [404, {}, []]
     end
 
   end

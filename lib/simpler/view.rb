@@ -10,12 +10,23 @@ module Simpler
     end
 
     def render(binding)
+      return format_render if template.is_a?(Hash)
+
       template = File.read(template_path)
 
       ERB.new(template).result(binding)
     end
 
     private
+
+    def format_render
+      case template.keys.first
+      when :plain
+        template[:plain]
+      else
+        raise 'Error render format'
+      end
+    end
 
     def controller
       @env['simpler.controller']
@@ -31,8 +42,9 @@ module Simpler
 
     def template_path
       path = template || [controller.name, action].join('/')
+      @env['simpler.template_path'] = "#{path}.html.erb"
 
-      Simpler.root.join(VIEW_BASE_PATH, "#{path}.html.erb")
+      Simpler.root.join(VIEW_BASE_PATH, @env['simpler.template_path'])
     end
 
   end

@@ -22,6 +22,10 @@ module Simpler
       @response.finish
     end
 
+    def params
+      @params ||= @request.params.merge(@request.env['simpler.route_params'])
+    end
+
     private
 
     def extract_name
@@ -33,21 +37,32 @@ module Simpler
     end
 
     def write_response
-      body = render_body
-
-      @response.write(body)
+      @response.write(render_body)
     end
 
     def render_body
+      set_content_type_header if @request.env['simpler.template'].is_a?(Hash)
+
       View.new(@request.env).render(binding)
     end
 
-    def params
-      @request.params
+    def set_content_type_header
+      case @request.env['simpler.template'].keys.first
+      when :plain
+        @response['Content-Type'] = 'text/plain'
+      end
     end
 
     def render(template)
       @request.env['simpler.template'] = template
+    end
+
+    def status(code)
+      @response.status = code
+    end
+
+    def headers
+      @response.headers
     end
 
   end
